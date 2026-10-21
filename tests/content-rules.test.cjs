@@ -1,0 +1,10 @@
+const assert=require('node:assert/strict'),R=require('../dist/content-rules.js');
+const id='M7lc1UVf-VE';
+for(const url of ['https://youtu.be/'+id,'https://www.youtube.com/watch?v='+id+'&list=abc','https://youtube.com/shorts/'+id,'https://youtube.com/live/'+id,'https://www.youtube-nocookie.com/embed/'+id])assert.ok(R.video(url).embed.includes('/embed/'+id));
+assert.ok(R.video('https://vimeo.com/123456789/abcdef1234').embed.includes('&h=abcdef1234'));
+assert.ok(R.video('https://player.vimeo.com/video/123456789?h=abcdef1234').embed.includes('&h=abcdef1234'));
+for(const url of ['javascript:alert(1)','https://youtube.com.evil.example/watch?v='+id,'https://youtube.com@evil.example/'+id,'https://www.youtube.com/playlist?list=abc','http://youtu.be/'+id,'https://vimeo.com/not-a-video','https://youtu.be/'+id+'bad'])assert.throws(()=>R.video(url));
+assert.throws(()=>R.image('javascript:alert(1)'));assert.throws(()=>R.image('data:image/svg+xml;base64,abcd'));assert.equal(R.image('https://example.com/image.png'),'https://example.com/image.png');
+assert.equal(R.notice({enabled:true,expiresAt:'2020-01-01'}),false);assert.equal(R.notice({enabled:false}),false);assert.equal(R.notice({enabled:true}),true);
+assert.throws(()=>R.categoryName('all',[]));assert.throws(()=>R.categoryName('snacks',['Snacks']));assert.equal(R.categoryName(' Food ',[]),'Food');
+console.log('PASS: video URL normalization, provider allowlist, private Vimeo hashes, unsafe URL rejection, notice expiry and category validation.');

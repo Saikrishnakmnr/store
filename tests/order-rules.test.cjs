@@ -1,0 +1,27 @@
+const assert = require('node:assert/strict');
+const R = require('../dist/order-rules.js');
+function order(extra = {}) { return { total: 500, status: 'Out for delivery', driver: 'Ravi', createdAt: new Date(Date.now()-3600000).toISOString(), dispatchedAt: new Date().toISOString(), policy: { freeMinutes:10, demoFeesEnabled:true, afterDispatchFee:30, maxFee:50, version:'v1' }, history:[], ...extra }; }
+let o=order(); let q=R.quote(o,'customer','Changed my mind');
+assert.equal(q.chargePaise,3000);assert.equal(q.refundPaise,47000);
+assert.equal(R.quote(order({deliveryFee:0}),'customer','Changed my mind').chargePaise,3000);
+assert.equal(R.quote(order(),'admin','Stock unavailable').chargePaise,0);
+assert.throws(()=>R.quote(order(),'customer','Technical issue'));
+assert.throws(()=>R.quote(order(),'attacker','Changed my mind'));
+assert.throws(()=>R.quote(order({createdAt:'invalid'}),'customer','Changed my mind'));
+assert.throws(()=>R.minor(NaN));assert.throws(()=>R.minor(Infinity));assert.throws(()=>R.minor(-1));
+assert.throws(()=>R.remaining(order({refundedPaise:60000})));
+assert.equal(R.quote(order({createdAt:new Date().toISOString()}),'customer','Changed my mind').chargePaise,0);
+assert.equal(R.quote(order({dispatchedAt:null}),'customer','Changed my mind').chargePaise,0);
+assert.equal(R.quote(order({policy:{demoFeesEnabled:false}}),'customer','Changed my mind').chargePaise,0);
+assert.equal(R.quote(order({total:10}),'customer','Changed my mind').chargePaise,1000);
+R.cancel(o,q,'Customer');assert.equal(o.pendingRefundPaise,47000);assert.equal(o.status,'Cancelled');
+assert.equal(R.remaining(o),0);
+assert.throws(()=>R.cancel(o,q,'Customer')); assert.throws(()=>R.refund(o,100,'Admin','Duplicate'));
+assert.throws(()=>R.quote(order({status:'Delivered'}),'customer','Changed my mind'));
+o=order({status:'Preparing',driver:'Unassigned',dispatchedAt:null});
+assert.throws(()=>R.transition(o,'Delivered','Admin'));
+R.transition(o,'Ready for pickup','Admin');assert.throws(()=>R.transition(o,'Out for delivery','Admin'));
+o.driver='Ravi';R.transition(o,'Out for delivery','Admin');assert.ok(o.dispatchedAt);
+R.queueEmail(o,'Order update',100000,true);assert.throws(()=>R.queueEmail(o,'Order update',110000,true));
+o=order();R.refund(o,10000,'Admin','Missing item');assert.throws(()=>R.refund(o,10000,'Admin','Duplicate'));assert.equal(R.remaining(o),40000);
+console.log('PASS: cancellation grace, dispatch requirement, free-delivery fee simulation, fault exemptions, fee caps, duplicate refunds, status transitions and resend cooldown.');
