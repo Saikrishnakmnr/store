@@ -1,0 +1,8 @@
+project_id = "racharla-store"
+# Each handler validates the user token, provider signature or worker secret itself.
+[functions.store-api]
+verify_jwt = false
+[functions.razorpay-webhook]
+verify_jwt = false
+[functions.email-worker]
+verify_jwt = false
