@@ -1,0 +1,13 @@
+
+# Do not commit real credentials
+.env
+.env.local
+.env.*.local
+.dev.vars
+config/server.env
+node_modules/
+*.zip
+
+.env.*
+*.pem
+supabase/.temp/
