@@ -1,7 +1,0 @@
-import {settings,rpc,db,json} from '../_shared/runtime.mjs';
-import {resendRequest} from '../_shared/provider-contracts.mjs';
-const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-Deno.serve(async req=>{const s=settings();if(req.method!=='POST'||!s.worker||req.headers.get('Authorization')!=='Bearer '+s.worker)return json({error:'Unauthorized'},401);
- if(!s.resend||!s.sender)return json({error:'Email not configured; outbox remains queued'},503);
- let sent=0;for(let i=0;i<10;i++){const row=await rpc('rm_claim_email',{});if(!row)break;try{const r=resendRequest({apiKey:s.resend,from:s.sender,to:row.recipient,eventId:row.id,subject:row.subject,html:'<p>'+esc(row.body).replace(/\n/g,'<br>')+'</p><p><a href="'+esc(s.origin)+'">Open store and sign in</a></p>'});const response=await fetch(r.url,r.options);const body=await response.json();if(!response.ok)throw Error('Provider response '+response.status);await db('rm_outbox?id=eq.'+row.id,{method:'PATCH',body:{state:'sent',provider_id:body.id,sent_at:new Date().toISOString(),last_error:null}});sent++;}catch(e){await db('rm_outbox?id=eq.'+row.id,{method:'PATCH',body:{state:row.attempts>=5?'review':'queued',last_error:String(e.message).slice(0,300),available_at:new Date(Date.now()+Math.min(3600000,60000*2**row.attempts)).toISOString()}});}}
- return json({sent,note:'Provider accepted is not proof of inbox delivery.'});});
