@@ -1,0 +1,18 @@
+const assert=require('node:assert/strict'),I=require('../dist/inventory-rules.js'),C=require('../dist/commerce-rules.js');
+const product=()=>I.sync({id:1,name:'Pickle',cat:'Pickles',variants:[{id:'250g',label:'250 g',price:149,stock:2},{id:'500g',label:'500 g',price:279,stock:1}]});
+let p=product(),cart={};I.add([p],cart,1,'250g');I.add([p],cart,1,'500g');assert.equal(Object.keys(cart).length,2);assert.deepEqual(I.rows([p],cart).map(r=>r.price),[149,279]);
+let quote=C.quote(I.rows([p],cart).map(e=>({pricePaise:Math.round(e.price*100),quantity:e.qty})),{enabled:true,name:'Launch',percent:5});assert.equal(quote.total,40660);
+assert.throws(()=>I.add([p],cart,1,'500g'));I.consume([p],cart);assert.equal(p.variants[0].stock,1);assert.equal(p.variants[1].stock,0);
+p=product();cart={'1:250g':1,'1:500g':2};assert.throws(()=>I.consume([p],cart));assert.equal(p.variants[0].stock,2);
+p=product();p.variants[1].enabled=false;assert.throws(()=>I.add([p],{},1,'500g'));
+assert.throws(()=>I.consume([p],{'1:250g':1},()=>false));assert.equal(p.variants[0].stock,2);
+for(const n of [-1,NaN,Infinity,'abc',0,1.001])assert.throws(()=>I.price(n));for(const n of [-1,1.1,NaN,Infinity])assert.throws(()=>I.stock(n));
+assert.throws(()=>I.validate([{id:'a',label:'250 g',price:1,stock:0},{id:'a',label:'500 g',price:2,stock:0}]));
+assert.throws(()=>I.validate([{id:'a',label:'250 g',price:1,stock:0},{id:'b',label:'250 G',price:2,stock:0}]));
+for(const k of ['__proto__','1:../../a','1:a:b','0:a'])assert.throws(()=>I.decode(k));
+assert.throws(()=>I.rows([product()],{'1:250g':-1}));assert.throws(()=>I.rows([product()],{'1:250g':100}));
+p=I.migrate({id:2,name:'Pickle',cat:'Pickles',price:149,stock:18});assert.equal(p.variants.length,4);assert.equal(p.stock,18);assert.equal(p.variants.find(v=>v.id==='weight-250g').stock,18);
+assert.equal(I.migrateCart([p],{'2':2}).cart['2:weight-250g'],2);
+p=I.migrate({id:3,name:'Shirt',cat:'Clothing',price:399,stock:12,hasSizes:true});assert.equal(p.stock,12);assert.equal(p.variants.find(v=>v.id==='size-l').stock,0);assert.equal(I.migrateCart([p],{'3:L':1}).cart['3:size-l'],1);
+assert.equal(I.migrateCart([p],{'__proto__':2,'999:bad':1,'3:M':-1}).dropped,2);
+console.log('PASS: separate variant pricing/stock, independent bag lines, oversell prevention, all-or-nothing stock validation, hidden variants, numeric validation and cart migration.');

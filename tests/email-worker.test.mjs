@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+let handler,claims=0,requests=[],updates=[],fail=false;
+const row={id:crypto.randomUUID(),order_id:crypto.randomUUID(),recipient:'buyer@example.com',subject:'Order update',body:'Order packed <test>',attempts:1};
+const env={SUPABASE_URL:'https://example.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'test-server-secret',STORE_ORIGIN:'https://store.example.com',EMAIL_WORKER_SECRET:'test-worker-secret',RESEND_API_KEY:'test-email-secret',RESEND_FROM:'Store <orders@example.com>'};
+globalThis.Deno={env:{get:k=>env[k]},serve:h=>handler=h};
+globalThis.fetch=async(url,opt={})=>{let data;if(url.endsWith('/rpc/rm_claim_email'))data=claims++===0?row:null;else if(url.includes('/rm_outbox?')){updates.push(JSON.parse(opt.body));data=[];}else if(url==='https://api.resend.com/emails'){requests.push(opt);return new Response(JSON.stringify(fail?{message:'Unavailable'}:{id:'email-test'}),{status:fail?503:200});}else throw Error('Unexpected request '+url);return new Response(JSON.stringify(data));};
+await import('../supabase/functions/email-worker/index.ts');
+const req=token=>new Request('https://example.supabase.co/functions/v1/email-worker',{method:'POST',headers:{Authorization:'Bearer '+token}});
+assert.equal((await handler(req('wrong'))).status,401);assert.equal(claims,0);
+assert.equal((await handler(req(env.EMAIL_WORKER_SECRET))).status,200);assert.equal(requests.length,1);assert.equal(requests[0].headers['Idempotency-Key'],'order-event/'+row.id);assert.ok(JSON.parse(requests[0].body).html.includes('&lt;test&gt;'));assert.equal(updates[0].state,'sent');assert.equal(updates[0].provider_id,'email-test');
+claims=0;fail=true;await handler(req(env.EMAIL_WORKER_SECRET));assert.equal(updates.at(-1).state,'queued');assert.ok(Date.parse(updates.at(-1).available_at)>Date.now());assert.equal(requests.at(-1).headers['Idempotency-Key'],requests[0].headers['Idempotency-Key']);
+console.log('PASS: email worker secret gate, escaped content, stable idempotency key, provider-accepted state and retry after provider failure (mocked).');
