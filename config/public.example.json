@@ -1,8 +1,8 @@
 {
   "mode": "preview",
-  "supabaseUrl": "https://YOUR_PROJECT.supabase.co",
-  "supabasePublishableKey": "REPLACE_WITH_PUBLIC_PUBLISHABLE_KEY_ONLY",
-  "siteUrl": "https://YOUR_STORE_DOMAIN",
+  "supabaseUrl": "https://qqoaxdunfgfytgvpjnxs.supabase.co",
+  "supabasePublishableKey": "sb_publishable_JhSdED9Eqd_UD9OTQcdXKw_SkgnSQY-",
+  "siteUrl": "https://store.racharlagpt.in",
   "authRedirectUrl": "https://YOUR_STORE_DOMAIN/auth/callback",
   "razorpayTestKeyId": "REPLACE_WITH_TEST_KEY_ID_ONLY",
   "notes": "Template only. Not read by the current preview. Backend and auth integration work is still required."
