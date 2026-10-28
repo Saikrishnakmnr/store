@@ -63,3 +63,12 @@ body {background:radial-gradient(circle at 10% 0%,#e9e3ff 0%,transparent 36%),ra
 #ra-shop .picture img{width:100%;height:100%;object-fit:contain;transition:transform .2s ease}
 #ra-shop .product:hover .picture img{transform:scale(1.04)}
 #ra-shop .listrow button{white-space:nowrap}
+
+/* Clearly label server-compatible product offers; cosmetic only. */
+#ra-shop .product .picture{position:relative}
+#ra-shop .rm-offer-badge{position:absolute;z-index:2;top:9px;left:9px;padding:6px 10px;border-radius:999px;background:linear-gradient(115deg,#ec2363,#a125df);color:white;font-size:12px;font-weight:800;line-height:1.2;box-shadow:0 4px 14px #9c196b40}
+#ra-shop .rm-price-stack{display:flex;flex-direction:column;align-items:flex-start;gap:3px;min-width:0}
+#ra-shop .rm-price-stack .live-price{font-size:1.24rem;line-height:1.2}
+#ra-shop .rm-old-price{color:#6c7487;font-size:.85rem;text-decoration:line-through}
+#ra-shop .rm-save{color:#166b40;font-weight:750;font-size:.78rem}
+@media(max-width:640px){#ra-shop .rm-offer-badge{top:6px;left:6px;font-size:10px;padding:5px 7px}#ra-shop .rm-price-stack .live-price{font-size:1.05rem}}
