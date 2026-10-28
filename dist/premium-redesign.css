@@ -86,3 +86,11 @@ body {background:radial-gradient(circle at 10% 0%,#e9e3ff 0%,transparent 36%),ra
 #ra-shop .delivery-safety-note,#ra-shop .delivery-rider-hint{border-left:4px solid #6753de;background:#f4f2ff;padding:10px 12px;border-radius:8px;line-height:1.6}
 #ra-shop #live-map{min-height:300px;border-radius:16px;overflow:hidden}
 @media(max-width:600px){#ra-shop .delivery-primary-actions{flex-direction:column}#ra-shop .delivery-primary-actions button{width:100%;flex:unset}#ra-shop #live-map{min-height:320px}}
+
+/* Bag discounts: same product offer formula as the product card, display only. */
+#ra-shop .rm-bag-price{display:flex;align-items:flex-end;flex-direction:column;gap:3px;min-width:95px;text-align:right}
+#ra-shop .rm-bag-original{color:#69718a;text-decoration:line-through}
+#ra-shop .rm-bag-saving{color:#116b47;font-weight:700;font-size:12px}
+#ra-shop .rm-location-search{margin:12px 0;padding:16px;border:1px solid #c9c6ee;border-radius:16px;background:#f8f7ff}
+#ra-shop .rm-location-search h3{margin:0 0 8px}
+@media(max-width:640px){#ra-shop .rm-bag-price{min-width:85px}#ra-shop .rm-location-search{padding:12px}}
