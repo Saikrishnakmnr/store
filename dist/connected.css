@@ -2,3 +2,5 @@
 
 /* Cart feedback and guided delivery, 2026-10-28 */
 .card-bag{display:grid;gap:6px;justify-items:center}.added-label{color:#176345;font-weight:700}.qty-control{display:flex;align-items:center;gap:12px;border:1px solid #176345;border-radius:12px;padding:3px}.qty-control button{min-width:44px;min-height:44px;font-size:22px}.view-bag{font-size:13px}.location-search{padding:16px;background:#f2f7f3;border-radius:12px;margin:16px 0}.location-search input{width:100%}.location-search p,#address-feedback{font-size:14px}#address-feedback:not(:empty){padding:12px;background:#fff3ce;color:#513b00}#live-map{min-height:330px}.product .section{flex-wrap:wrap;gap:12px}
+
+.install-banner{background:#e6f5ec;border:1px solid #176340;padding:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}.install-banner[hidden]{display:none}.install-banner button{min-height:44px}.install-banner strong{flex:1}
