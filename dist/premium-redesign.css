@@ -1,0 +1,65 @@
+/* RacharlaMart visual enhancement — connected storefront only.
+   Add after connected.css. No payment, order, security or delivery logic changed. */
+:root { color-scheme: light; }
+body {background:radial-gradient(circle at 10% 0%,#e9e3ff 0%,transparent 36%),radial-gradient(circle at 90% 14%,#dcf6ff 0%,transparent 30%),#f6f7fd;padding:16px;color:#17213b;}
+#ra-shop {color-scheme:light;--paper:#fbfcff;--panel:#fff;--ink:#17213b;--quiet:#56627a;--line:#dfe5f5;--green:#5549d9;--on:#fff;--wash:#f1efff;--gold:#fff2cb;max-width:1280px;border:1px solid #dbe2f5;border-radius:26px;box-shadow:0 22px 75px #322a7b18;overflow:hidden;}
+#ra-shop header {position:sticky;top:0;z-index:20;background:#ffffffed;backdrop-filter:blur(18px);border-bottom:1px solid #e6e9f6;padding:16px 25px;gap:10px;}
+#ra-shop header .brand {font-weight:850;letter-spacing:-.9px;color:#282564;}
+#ra-shop header button {border-color:transparent;background:transparent;font-weight:700;}
+#ra-shop header button:hover {background:#f0edff;color:#4938c6;}
+#ra-shop .ribbon {background:linear-gradient(110deg,#392c9d,#754ad8 53%,#087baf);color:#fff;}
+#ra-shop main {padding:clamp(16px,3vw,35px);}
+#ra-shop h1,#ra-shop h2,#ra-shop h3 {color:#1c2345;letter-spacing:-.03em;}
+#ra-shop h1 {font-size:clamp(28px,4vw,46px);line-height:1.12;}
+#ra-shop .hero,#ra-shop .offer-carousel {border:0;border-radius:24px;background:linear-gradient(125deg,#e9ddff,#eff2ff 51%,#daf7fc);box-shadow:0 14px 32px #6154b514;}
+#ra-shop .hero-copy,#ra-shop .slide-copy {padding:clamp(22px,4vw,42px);}
+#ra-shop .products {gap:18px;}
+#ra-shop .product,#ra-shop .box,#ra-shop .stat {border-radius:20px;background:#fff;border:1px solid #e2e6f5;box-shadow:0 6px 24px #2834730c;}
+#ra-shop .product {padding:14px;transition:transform .23s ease,box-shadow .23s ease,border-color .23s ease;}
+#ra-shop .product:hover {transform:translateY(-5px);box-shadow:0 20px 45px #5147a026;border-color:#b7b3f8;}
+#ra-shop .picture {background:linear-gradient(145deg,#f0ebff,#effaff);border-radius:16px;height:155px;}
+#ra-shop .price,#ra-shop .live-price {color:#4534b7;font-weight:850;}
+#ra-shop button {border-radius:12px;min-height:42px;font-weight:650;transition:transform .2s ease,box-shadow .2s ease,background .2s ease;}
+#ra-shop button.strong,#ra-shop button.active,#ra-shop .qty-control button:hover {background:linear-gradient(115deg,#6045e8,#8a43d9 60%,#057bbb);border:0;color:#fff;box-shadow:0 7px 16px #5b44cc30;}
+#ra-shop button.strong:hover:not(:disabled) {transform:translateY(-2px);box-shadow:0 12px 24px #5543cb48;}
+#ra-shop button:focus-visible,#ra-shop a:focus-visible,#ra-shop input:focus-visible,#ra-shop select:focus-visible {outline:3px solid #0d8ca4;outline-offset:3px;}
+#ra-shop input:not([type=checkbox]),#ra-shop select,#ra-shop textarea {min-height:44px;border-radius:12px;border-color:#d8dff0;background:#fff;color:#18223e;}
+#ra-shop .status,#ra-shop .tag {border-radius:999px;padding:5px 10px;}
+#ra-shop .live-code {background:#f1edff;color:#4532b0;border:2px dashed #aba0eb;}
+#ra-shop .location-search,#ra-shop .live-note {background:#f0f5ff;border:1px solid #dfe8fa;border-radius:16px;}
+#ra-shop footer {background:#fafaff;}
+.install-banner {position:relative;z-index:25;background:linear-gradient(115deg,#ebe5ff,#e1f6ff);border:1px solid #c9c5f4;border-radius:16px;margin:10px 14px;padding:15px 19px;box-shadow:0 12px 32px #5042ae18;}
+.install-banner strong {color:#24205c;font-size:15px;}
+.install-banner button {background:#fff;border:1px solid #b8b1ec;color:#362a8f;border-radius:11px;padding:10px 14px;cursor:pointer;}
+.install-banner #install-action {background:linear-gradient(110deg,#5b45dc,#1976bb);color:white;border:0;font-weight:800;}
+@media(max-width:640px){body{padding:0}#ra-shop{border-radius:0;border:0}#ra-shop header{padding:12px;position:sticky}#ra-shop header .brand{width:100%;font-size:20px}#ra-shop .products{gap:10px}#ra-shop .product{padding:10px}#ra-shop .picture{height:115px}#ra-shop .product:hover{transform:none}.install-banner{margin:8px;border-radius:12px}#ra-shop .stat{padding:14px}}
+@media(prefers-reduced-motion:reduce){#ra-shop *,#ra-shop *:before,#ra-shop *:after{transition:none!important;animation:none!important;transform:none!important}}
+
+/* Final polish: semantic clarity, mobile navigation, checkout and rider/admin panels */
+#ra-shop{--gradient-primary:linear-gradient(110deg,#5944e8 0%,#8d41db 55%,#087fb6 100%)}
+#ra-shop header{box-shadow:0 4px 22px #2820650b}
+#ra-shop .category-widgets{gap:12px}
+#ra-shop .category-widget{border:1px solid #dddff5;box-shadow:0 4px 12px #5040ae0d;border-radius:16px;background:#fff}
+#ra-shop .category-widget:hover{transform:translateY(-3px);border-color:#aa9cf5}
+#ra-shop .offer-carousel .slide-controls button{background:#fff;color:#3b2f94;border:1px solid #c9c5f4}
+#ra-shop .listrow,#ra-shop .live-order{border-radius:12px}
+#ra-shop .steps span{border-radius:999px;background:#efecff;color:#42339a;font-weight:650}
+#ra-shop .stats .stat{background:linear-gradient(135deg,#f7f4ff,#f2fbff);border:1px solid #e1dffc}
+#ra-shop .launch-strip{background:var(--gradient-primary);color:#fff;border-radius:16px}
+#ra-shop .live-links a{border-radius:12px;background:#f0edff;color:#4735ac}
+#ra-shop .qty-control{border-color:#bdb5f4}
+#ra-shop .notice,#ra-shop #address-feedback:not(:empty){color:#4a371a;background:#fff3ce}
+#ra-shop button:disabled{opacity:.55;box-shadow:none;cursor:not-allowed}
+#ra-shop header button.active{color:#fff}
+#ra-shop .product .row{align-items:center}
+#ra-shop .modal{box-shadow:0 12px 40px #27265c19}
+@media(max-width:640px){#ra-shop header{gap:6px}#ra-shop header button{flex:1 1 auto;padding:9px 6px;font-size:12px}#ra-shop .brand{flex:1 1 100%}#ra-shop .product{min-width:0}#ra-shop .price{font-size:16px}#ra-shop .offer-carousel .slide-copy{padding:18px 16px 70px}}
+
+/* New department placeholders and category management */
+#ra-shop .category-widgets{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+#ra-shop .category-widget{font-weight:750;background:linear-gradient(145deg,#fff,#f1edff);color:#33277e}
+#ra-shop .category-widget.active{color:white;background:linear-gradient(110deg,#5944e8,#8d41db,#087fb6)}
+#ra-shop .product .picture{overflow:hidden;background:linear-gradient(135deg,#f4ecff,#e6f8ff);border-radius:16px}
+#ra-shop .picture img{width:100%;height:100%;object-fit:contain;transition:transform .2s ease}
+#ra-shop .product:hover .picture img{transform:scale(1.04)}
+#ra-shop .listrow button{white-space:nowrap}
