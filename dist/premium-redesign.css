@@ -72,3 +72,17 @@ body {background:radial-gradient(circle at 10% 0%,#e9e3ff 0%,transparent 36%),ra
 #ra-shop .rm-old-price{color:#6c7487;font-size:.85rem;text-decoration:line-through}
 #ra-shop .rm-save{color:#166b40;font-weight:750;font-size:.78rem}
 @media(max-width:640px){#ra-shop .rm-offer-badge{top:6px;left:6px;font-size:10px;padding:5px 7px}#ra-shop .rm-price-stack .live-price{font-size:1.05rem}}
+
+/* Customer delivery pin guidance */
+.map-helper{margin:12px 0;padding:12px 14px;border:1px solid #b6caff;border-radius:14px;background:#edf3ff;color:#15234a;line-height:1.55;font-size:14px}.map-helper button{margin:8px 0 0;display:block;background:linear-gradient(110deg,#5847e8,#0b8ac7);color:white;border:0;border-radius:10px;padding:10px 14px;font-weight:700}#live-map{min-height:360px;border-radius:14px;overflow:hidden}#live-map .leaflet-container{font-size:13px}
+
+/* Doorstep flow — instructions only; existing address, fee, stock and order logic remains unchanged. */
+#ra-shop .delivery-step-intro{background:#f0eeff;border:1px solid #d9d4ff;border-radius:14px;padding:12px 14px;line-height:1.65;color:#252653}
+#ra-shop .delivery-primary-actions{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}
+#ra-shop .delivery-primary-actions button{min-height:46px;flex:1 1 180px;white-space:normal}
+#ra-shop .delivery-advanced{margin:12px 0;border:1px solid #dfe3f3;border-radius:14px;padding:12px;background:#fbfcff}
+#ra-shop .delivery-advanced summary{cursor:pointer;font-weight:700;color:#38338c;line-height:1.5}
+#ra-shop .delivery-advanced .location-search{margin-top:12px}
+#ra-shop .delivery-safety-note,#ra-shop .delivery-rider-hint{border-left:4px solid #6753de;background:#f4f2ff;padding:10px 12px;border-radius:8px;line-height:1.6}
+#ra-shop #live-map{min-height:300px;border-radius:16px;overflow:hidden}
+@media(max-width:600px){#ra-shop .delivery-primary-actions{flex-direction:column}#ra-shop .delivery-primary-actions button{width:100%;flex:unset}#ra-shop #live-map{min-height:320px}}
