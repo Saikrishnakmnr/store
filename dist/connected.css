@@ -75,3 +75,9 @@
   #ra-shop #live-modal:not([hidden]) > .row:first-child {padding:10px 12px;}
   #ra-shop #live-modal:not([hidden]) .live-auth {padding:18px;}
 }
+
+/* Delivery form simplification: preserve original coordinate inputs for map logic. */
+#ra-shop #live-modal .rm-coordinate-field{display:none}
+#ra-shop #live-modal .live-actions [data-geolocate],#ra-shop #live-modal .live-actions [data-show-map]{min-height:46px;font-weight:700}
+#ra-shop #live-modal #live-map:not([hidden]){display:block;width:min(100%,650px);margin:12px auto 16px;border:2px solid #d6e9ed;border-radius:14px;overflow:hidden;min-height:360px}
+#ra-shop #live-modal .location-search{max-width:650px}
