@@ -81,3 +81,22 @@
 #ra-shop #live-modal .live-actions [data-geolocate],#ra-shop #live-modal .live-actions [data-show-map]{min-height:46px;font-weight:700}
 #ra-shop #live-modal #live-map:not([hidden]){display:block;width:min(100%,650px);margin:12px auto 16px;border:2px solid #d6e9ed;border-radius:14px;overflow:hidden;min-height:360px}
 #ra-shop #live-modal .location-search{max-width:650px}
+
+/* Readable content in all shared dialogs: address, account, checkout, admin, rider.
+   Light information panels must not inherit near-white overlay text. */
+#ra-shop #live-modal:not([hidden]) :is(.delivery-step-intro,.location-search,.rm-location-search,.map-helper,.delivery-safety-note,.delivery-rider-hint,.live-note,.live-code,.box,.stat,.notice,.policy-summary,.delivery-advanced,.receipt-paper,.live-receipt){
+  color:#17213b;
+}
+#ra-shop #live-modal:not([hidden]) :is(.delivery-step-intro,.location-search,.rm-location-search,.map-helper,.delivery-safety-note,.delivery-rider-hint,.live-note,.live-code,.box,.stat,.notice,.policy-summary,.delivery-advanced,.receipt-paper,.live-receipt) :is(h1,h2,h3,h4,p,label,small,span,strong,b,em,li,summary){
+  color:inherit;
+}
+#ra-shop #live-modal:not([hidden]) #address-feedback:not(:empty){
+  color:#513b00;
+  background:#fff3ce;
+  border:1px solid #e7c76c;
+  border-radius:10px;
+}
+#ra-shop #live-modal:not([hidden]) .location-search a,
+#ra-shop #live-modal:not([hidden]) .map-helper a{color:#3b299e}
+#ra-shop #live-modal:not([hidden]) .leaflet-container,
+#ra-shop #live-modal:not([hidden]) .leaflet-container :is(p,span,small,strong,b,a){color:#252c39}
