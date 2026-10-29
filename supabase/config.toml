@@ -6,3 +6,8 @@ verify_jwt = false
 verify_jwt = false
 [functions.email-worker]
 verify_jwt = false
+
+[functions.admin-push]
+verify_jwt = false
+[functions.admin-push-worker]
+verify_jwt = false
