@@ -76,4 +76,12 @@ assert.equal((await call('restock',{id:unpaidId,inspected:true},'admin')).status
 assert.equal(s.state.products[0].variants[0].stock,stockHeld+1);
 assert.equal((await call('restock',{id:unpaidId,inspected:true},'admin')).status,400,'Restocking twice must fail');
 assert.equal(s.state.products[0].variants[0].stock,stockHeld+1);
+// A late captured payment after manual release must be flagged, not silently fulfilled.
+const lateCapture=await call('verifyPayment',{id:unpaidId,result:validResult});
+assert.equal(lateCapture.status,200);
+const lateOrder=saved.find(x=>x.id===unpaidId).payload;
+assert.equal(lateOrder.status,'Cancelled','Late capture cannot silently reactivate a cancelled order');
+assert.equal(lateOrder.paidPaise,9500);
+assert.match(lateOrder.refund,/Captured after cancellation/);
+assert.equal(s.state.products[0].variants[0].stock,stockHeld+1,'Late capture must not deduct stock that was already released');
 console.log('PASS: actual Edge handler under mocked services: origin/auth checks, server quote, repeat checkout idempotency, stock once, signature rejection/verified capture, duplicate capture/refund handling, order ownership, private ebook download gate and refund lock.');
