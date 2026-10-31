@@ -9,6 +9,18 @@ const o=newOrder(s,{cart:{'1:500g':3},address,requestKey:crypto.randomUUID(),exp
 assert.throws(()=>newOrder(state(),{cart:{'1:500g':1},address,requestKey:crypto.randomUUID(),expectedTotal:1},customer),/changed/);
 assert.throws(()=>getQuote(state(),{'1:500g':11},address),/stock/);assert.throws(()=>getQuote(state(),{'1:500g':1},{...address,lat:18}),/Outside/);
 assert.throws(()=>getQuote({...state(),storeMode:'closed'},{'1:500g':1},address),/not accepting/);
+// Repricing a product invalidates an earlier reviewed total.
+const repriced=state(),oldTotal=getQuote(repriced,{'1:500g':1},address).q.total;
+repriced.products[0].variants[0].price=45;
+assert.throws(()=>newOrder(repriced,{cart:{'1:500g':1},address,requestKey:crypto.randomUUID(),expectedTotal:oldTotal},customer),/changed/);
+assert.equal(repriced.products[0].variants[0].stock,10);
+// Disabled variants cannot be quoted or newly reserved after hide/archive.
+for(const flag of ['hidden','archived']){
+ const unavailable=state();unavailable.products[0][flag]=true;unavailable.products[0].variants[0].enabled=false;
+ assert.throws(()=>getQuote(unavailable,{'1:500g':1},address),/not for sale|unavailable|variant/i);
+ assert.throws(()=>newOrder(unavailable,{cart:{'1:500g':1},address,requestKey:crypto.randomUUID(),expectedTotal:4200},customer),/not for sale|unavailable|variant/i);
+ assert.equal(unavailable.products[0].variants[0].stock,10);
+}
 const digital=getQuote(state(),{'2:pdf':1},null);assert.equal(digital.q.deliveryPaise,0);assert.equal(digital.q.total,9500);assert.equal(digital.address,null);assert.throws(()=>getQuote(state(),{'2:pdf':2},null),/one copy/);
 const mixed=getQuote(state(),{'1:500g':2,'2:pdf':1},address);assert.equal(mixed.q.total,18100);assert.equal(mixed.q.deliveryPaise,1000);
 const ebook=newOrder(state(),{cart:{'2:pdf':1},address:null,requestKey:crypto.randomUUID(),expectedTotal:9500},customer);assert.equal(ebook.physical,false);assert.throws(()=>downloadPath(ebook,customer,'2:pdf'),/captured/);ebook.paidPaise=9500;ebook.status='Delivered';assert.equal(downloadPath(ebook,customer,'2:pdf'),'test/recipes.pdf');assert.throws(()=>downloadPath(ebook,admin,'2:pdf'),/purchasing/);ebook.pendingRefundPaise=100;assert.throws(()=>downloadPath(ebook,customer,'2:pdf'),/refund/);ebook.pendingRefundPaise=0;
