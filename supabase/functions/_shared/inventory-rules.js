@@ -8,7 +8,7 @@
   const ids=new Set(),labels=new Set();
   return variants.map(v=>{if(!/^[a-zA-Z0-9_-]{1,64}$/.test(v.id||'')||ids.has(v.id))throw Error('Variant IDs must be unique.');ids.add(v.id);
    const label=String(v.label||'').trim();if(!label||label.length>60||labels.has(label.toLowerCase()))throw Error('Each variant needs a unique label, up to 60 characters.');labels.add(label.toLowerCase());
-   const selling=price(v.price),mrp=v.mrp==null||v.mrp===''?null:price(v.mrp);if(mrp!==null&&mrp<selling)throw Error('MRP cannot be below the selling price.');return {id:v.id,label,price:selling,...(mrp!==null?{mrp}:{}),stock:stock(v.stock),enabled:v.enabled!==false};
+   return {id:v.id,label,price:price(v.price),stock:stock(v.stock),enabled:v.enabled!==false};
   });
  }
  function sync(p){p.variants=validate(p.variants);const active=p.variants.filter(v=>v.enabled);p.stock=active.reduce((s,v)=>s+v.stock,0);p.price=Math.min(...(active.length?active:p.variants).map(v=>v.price));return p;}
