@@ -11,6 +11,8 @@ const response=(body,status=200)=>new Response(JSON.stringify(body),{status,head
 globalThis.fetch=async(url,options={})=>{
  const u=new URL(url),body=options.body?JSON.parse(options.body):null;
  if(u.pathname==='/auth/v1/user'){const token=options.headers.Authorization.replace('Bearer ','');return users[token]?response(users[token]):response({},401);}
+ if(u.host==='api.razorpay.com'&&u.pathname==='/v1/orders/order_123')return response({id:'order_123',amount:9500,currency:'INR',status:'created'});
+ if(u.host==='api.razorpay.com'&&u.pathname==='/v1/orders/order_123/payments')return response({items:[]});
  if(u.host==='api.razorpay.com'&&u.pathname==='/v1/orders'&&options.method==='POST'){paymentPosts++;return response({id:'order_123',amount:9500,currency:'INR'});}
  if(u.host==='api.razorpay.com'&&u.pathname==='/v1/payments/pay_123')return response({id:'pay_123',order_id:'order_123',amount:9500,currency:'INR',status:'captured',captured:true});
  if(u.host==='api.razorpay.com'&&u.pathname==='/v1/payments/pay_123/refund'){refundPosts++;return response({id:'rfnd_test',payment_id:'pay_123',amount:body.amount,notes:body.notes,status:'processed'});}
