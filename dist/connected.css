@@ -103,3 +103,7 @@
 
 /* Store policy dialogs preserve line breaks without inline CSS. */
 #ra-shop #live-modal .live-policy-text{white-space:pre-wrap}
+
+/* Clearly identify incomplete delivery fields without relying on text alone. */
+#ra-shop #live-modal input.rm-field-error,#ra-shop #live-modal input[aria-invalid="true"]{border:3px solid #c91c35!important;background:#fff0f2!important;box-shadow:0 0 0 3px rgba(201,28,53,.18)!important}
+#ra-shop #live-modal input.rm-field-error:focus{outline:3px solid #c91c35;outline-offset:2px}
