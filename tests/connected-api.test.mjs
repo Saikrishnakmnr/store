@@ -7,13 +7,13 @@ const users={buyer:{id:uid,email:'buyer@example.com',email_confirmed_at:new Date
 let s={id:true,version:0,state:{storeMode:'open',branding:{name:'Test store'},categories:[{name:'Ebooks',enabled:true}],products:[{id:1,name:'Test ebook',cat:'Ebooks',kind:'ebook',ebookPath:'test/book.pdf',variants:[{id:'pdf',label:'PDF',price:100,stock:3,enabled:true}]}],billOffer:{enabled:true,name:'Launch',percent:5},policy:{},radius:5,freeKm:1,rate:10,free:true,deliveryEnabled:true,allowedPincodes:[]}},saved=[],mails=[],paymentPosts=0,refundPosts=0,handler;
 const env={SUPABASE_URL:'https://example.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'fake-server-secret',STORE_ORIGIN:'https://store.example.com',RAZORPAY_KEY_ID:'test-key-id',RAZORPAY_KEY_SECRET:'test-key-secret'};
 globalThis.Deno={env:{get:k=>env[k]},serve:h=>{handler=h;}};
-let providerOrderStatus='created',providerAttempts=[],providerLookupFails=false;
+let providerOrderStatus='created',providerAttempts=[],providerLookupFails=false,providerReportedCount=null;
 const response=(body,status=200)=>new Response(JSON.stringify(body),{status,headers:{'Content-Type':'application/json'}});
 globalThis.fetch=async(url,options={})=>{
  const u=new URL(url),body=options.body?JSON.parse(options.body):null;
  if(u.pathname==='/auth/v1/user'){const token=options.headers.Authorization.replace('Bearer ','');return users[token]?response(users[token]):response({},401);}
  if(u.host==='api.razorpay.com'&&u.pathname==='/v1/orders/order_123')return providerLookupFails?response({error:{description:'Provider unavailable'}},503):response({id:'order_123',amount:9500,currency:'INR',status:providerOrderStatus});
- if(u.host==='api.razorpay.com'&&u.pathname==='/v1/orders/order_123/payments')return response({items:providerAttempts});
+ if(u.host==='api.razorpay.com'&&u.pathname==='/v1/orders/order_123/payments')return response({count:providerReportedCount??providerAttempts.length,items:providerAttempts});
  if(u.host==='api.razorpay.com'&&u.pathname==='/v1/orders'&&options.method==='POST'){paymentPosts++;return response({id:'order_123',amount:9500,currency:'INR'});}
  if(u.host==='api.razorpay.com'&&u.pathname==='/v1/payments/pay_123')return response({id:'pay_123',order_id:'order_123',amount:9500,currency:'INR',status:'captured',captured:true});
  if(u.host==='api.razorpay.com'&&u.pathname==='/v1/payments/pay_123/refund'){refundPosts++;return response({id:'rfnd_test',payment_id:'pay_123',amount:body.amount,notes:body.notes,status:'processed'});}
@@ -84,7 +84,9 @@ providerAttempts=[{status:'captured'}];
 assert.equal((await call('restock',{id:unpaidId,inspected:true},'admin')).status,400,'Captured payment attempt must block release');
 providerLookupFails=true;
 assert.equal((await call('restock',{id:unpaidId,inspected:true},'admin')).status,400,'Unavailable provider must fail closed');
-providerLookupFails=false;providerAttempts=[];
+providerLookupFails=false;providerAttempts=[];providerReportedCount=1;
+assert.equal((await call('restock',{id:unpaidId,inspected:true},'admin')).status,400,'Incomplete payment attempt page must block release');
+providerReportedCount=null;
 assert.equal((await call('restock',{id:unpaidId,inspected:true},'admin')).status,200);
 assert.equal(s.state.products[0].variants[0].stock,stockHeld+1);
 assert.equal((await call('restock',{id:unpaidId,inspected:true},'admin')).status,400,'Restocking twice must fail');
