@@ -59,4 +59,21 @@ const validResult={razorpay_order_id:'order_123',razorpay_payment_id:'pay_123',r
 saved[0].payload.pendingRefundPaise=100;assert.equal((await call('download',{id,lineId:'1:pdf'})).status,400);
 const history=await call('bootstrap');assert.equal(history.data.orders.length,1);assert.equal(history.data.orders[0].lineItems[0].assetPath,undefined);assert.equal((await call('bootstrap',{},'other')).data.orders.length,0);
 saved[0].payload.pendingRefundPaise=0;const requestId=crypto.randomUUID();const refundInput={id,requestId,amountPaise:9500,reason:'Approved test return'};assert.equal((await call('refund',refundInput,'admin')).status,200);assert.equal(saved[0].payload.refundedPaise,9500);assert.equal(saved[0].payload.pendingRefundPaise,0);assert.equal((await call('refund',refundInput,'admin')).status,200);assert.equal(refundPosts,1,'Duplicate refund intent must not call provider twice');assert.equal((await call('download',{id,lineId:'1:pdf'})).status,400);
+// Cancelled, unpaid orders remain recorded; inspected Admin restocking is one-time only.
+const reopenedState=structuredClone(s.state);reopenedState.products[0].archived=false;reopenedState.products[0].hidden=false;reopenedState.products[0].variants[0].enabled=true;
+assert.equal((await call('saveStore',{state:reopenedState,version:s.version},'admin')).status,200);
+const unpaidKey=crypto.randomUUID();
+const unpaid=await call('checkout',{requestKey:unpaidKey,cart:{'1:pdf':1},address:null,expectedTotal:9500});
+assert.equal(unpaid.status,200);
+const unpaidId=unpaid.data.order.id,stockHeld=s.state.products[0].variants[0].stock;
+assert.equal((await call('cancel',{id:unpaidId,reason:'Customer abandoned checkout'},'admin')).status,200);
+assert.equal(saved.find(x=>x.id===unpaidId).payload.status,'Cancelled');
+assert.equal(s.state.products[0].variants[0].stock,stockHeld,'Cancellation must not silently release stock');
+assert.equal((await call('resumePayment',{id:unpaidId})).status,400,'Cancelled orders must not resume');
+assert.equal((await call('restock',{id:unpaidId,inspected:false},'admin')).status,400);
+assert.equal((await call('restock',{id:unpaidId,inspected:true},'buyer')).status,400);
+assert.equal((await call('restock',{id:unpaidId,inspected:true},'admin')).status,200);
+assert.equal(s.state.products[0].variants[0].stock,stockHeld+1);
+assert.equal((await call('restock',{id:unpaidId,inspected:true},'admin')).status,400,'Restocking twice must fail');
+assert.equal(s.state.products[0].variants[0].stock,stockHeld+1);
 console.log('PASS: actual Edge handler under mocked services: origin/auth checks, server quote, repeat checkout idempotency, stock once, signature rejection/verified capture, duplicate capture/refund handling, order ownership, private ebook download gate and refund lock.');
