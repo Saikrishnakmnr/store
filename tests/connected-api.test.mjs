@@ -35,6 +35,15 @@ const publicCatalog=await call('catalog');assert.equal(publicCatalog.data.state.
 const quoted=await call('quote',{cart:{'1:pdf':1},address:null});assert.equal(quoted.data.total,9500);assert.equal(quoted.data.lines[0].assetPath,undefined);
 const requestKey=crypto.randomUUID();const first=await call('checkout',{requestKey,cart:{'1:pdf':1},address:null,expectedTotal:9500});assert.equal(first.status,200,JSON.stringify(first.data));assert.equal(paymentPosts,1);assert.equal(saved.length,1);assert.equal(s.state.products[0].variants[0].stock,2);assert.equal(first.data.order.status,'Awaiting payment');
 const again=await call('checkout',{requestKey,cart:{'1:pdf':1},address:null,expectedTotal:9500});assert.equal(again.status,200);assert.equal(paymentPosts,1);assert.equal(saved.length,1);assert.equal(s.state.products[0].variants[0].stock,2);
+// Existing unpaid reservations remain identifiable after Admin hides a product.
+const hiddenState=structuredClone(s.state);hiddenState.products[0].hidden=true;hiddenState.products[0].variants[0].enabled=false;
+assert.equal((await call('saveStore',{state:hiddenState,version:s.version},'admin')).status,200);
+assert.equal((await call('quote',{cart:{'1:pdf':1},address:null})).status,400,'Hidden variant must reject fresh quotes');
+const afterHide=await call('checkout',{requestKey,cart:{'1:pdf':1},address:null,expectedTotal:9500});
+assert.equal(afterHide.status,200,'Previously reserved unpaid order must not be silently lost');
+assert.equal(afterHide.data.order.id,saved[0].id);
+assert.equal(paymentPosts,1,'Hide must not create another Razorpay order');
+assert.equal(s.state.products[0].variants[0].stock,2,'Hide must not reserve or release stock again');
 const id=saved[0].id;assert.equal((await call('resumePayment',{id},'other')).status,400);assert.equal((await call('download',{id,lineId:'1:pdf'})).status,400);assert.equal((await call('saveStore',{state:s.state,version:s.version})).status,400);
 assert.equal((await call('verifyPayment',{id,result:{razorpay_order_id:'order_123',razorpay_payment_id:'pay_123',razorpay_signature:'0'.repeat(64)}})).status,400);
 const validResult={razorpay_order_id:'order_123',razorpay_payment_id:'pay_123',razorpay_signature:createHmac('sha256',env.RAZORPAY_KEY_SECRET).update('order_123|pay_123').digest('hex')};assert.equal((await call('verifyPayment',{id,result:validResult})).status,200);const mailCount=mails.length;assert.equal((await call('verifyPayment',{id,result:validResult})).status,200);assert.equal(mails.length,mailCount,'Repeated capture must not emit duplicate confirmation');assert.equal(saved[0].payload.status,'Delivered');assert.equal((await call('download',{id,lineId:'1:pdf'})).status,200);assert.equal((await call('download',{id,lineId:'1:pdf'},'other')).status,400);
