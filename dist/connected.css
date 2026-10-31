@@ -100,3 +100,6 @@
 #ra-shop #live-modal:not([hidden]) .map-helper a{color:#3b299e}
 #ra-shop #live-modal:not([hidden]) .leaflet-container,
 #ra-shop #live-modal:not([hidden]) .leaflet-container :is(p,span,small,strong,b,a){color:#252c39}
+
+/* Store policy dialogs preserve line breaks without inline CSS. */
+#ra-shop #live-modal .live-policy-text{white-space:pre-wrap}
