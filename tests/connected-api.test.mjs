@@ -44,6 +44,15 @@ assert.equal(afterHide.status,200,'Previously reserved unpaid order must not be 
 assert.equal(afterHide.data.order.id,saved[0].id);
 assert.equal(paymentPosts,1,'Hide must not create another Razorpay order');
 assert.equal(s.state.products[0].variants[0].stock,2,'Hide must not reserve or release stock again');
+// Archiving after reservation must stop new sales without altering the existing provider order.
+const archivedState=structuredClone(s.state);archivedState.products[0].archived=true;archivedState.products[0].hidden=true;
+assert.equal((await call('saveStore',{state:archivedState,version:s.version},'admin')).status,200);
+assert.equal((await call('quote',{cart:{'1:pdf':1},address:null})).status,400);
+const afterArchive=await call('checkout',{requestKey,cart:{'1:pdf':1},address:null,expectedTotal:9500});
+assert.equal(afterArchive.status,200);
+assert.equal(afterArchive.data.order.id,saved[0].id);
+assert.equal(paymentPosts,1,'Archive must not create a second Razorpay order');
+assert.equal(s.state.products[0].variants[0].stock,2,'Archive must not release reserved stock');
 const id=saved[0].id;assert.equal((await call('resumePayment',{id},'other')).status,400);assert.equal((await call('download',{id,lineId:'1:pdf'})).status,400);assert.equal((await call('saveStore',{state:s.state,version:s.version})).status,400);
 assert.equal((await call('verifyPayment',{id,result:{razorpay_order_id:'order_123',razorpay_payment_id:'pay_123',razorpay_signature:'0'.repeat(64)}})).status,400);
 const validResult={razorpay_order_id:'order_123',razorpay_payment_id:'pay_123',razorpay_signature:createHmac('sha256',env.RAZORPAY_KEY_SECRET).update('order_123|pay_123').digest('hex')};assert.equal((await call('verifyPayment',{id,result:validResult})).status,200);const mailCount=mails.length;assert.equal((await call('verifyPayment',{id,result:validResult})).status,200);assert.equal(mails.length,mailCount,'Repeated capture must not emit duplicate confirmation');assert.equal(saved[0].payload.status,'Delivered');assert.equal((await call('download',{id,lineId:'1:pdf'})).status,200);assert.equal((await call('download',{id,lineId:'1:pdf'},'other')).status,400);
