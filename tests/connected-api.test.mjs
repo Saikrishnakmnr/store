@@ -99,4 +99,12 @@ assert.equal(lateOrder.status,'Cancelled','Late capture cannot silently reactiva
 assert.equal(lateOrder.paidPaise,9500);
 assert.match(lateOrder.refund,/Captured after cancellation/);
 assert.equal(s.state.products[0].variants[0].stock,stockHeld+1,'Late capture must not deduct stock that was already released');
+// Fully refunded physical returns may be restocked after inspection; an unreconciled payment may not.
+const returnedId=unpaidId;const returned=saved.find(x=>x.id===returnedId).payload;
+returned.restocked=false;returned.paidPaise=9500;returned.refundedPaise=9500;returned.pendingRefundPaise=0;returned.paymentId='pay_123';returned.refunds=[{id:crypto.randomUUID(),providerId:'rfnd_test',state:'processed',amountPaise:9500}];
+providerOrderStatus='paid';providerAttempts=[{id:'pay_123',order_id:'order_123',amount:9500,status:'captured'}];
+const returnedStock=s.state.products[0].variants[0].stock;
+assert.equal((await call('restock',{id:returnedId,inspected:true},'admin')).status,200,'Fully refunded returned goods may be restored');
+assert.equal(s.state.products[0].variants[0].stock,returnedStock+1);
+assert.equal((await call('restock',{id:returnedId,inspected:true},'admin')).status,400);
 console.log('PASS: actual Edge handler under mocked services: origin/auth checks, server quote, repeat checkout idempotency, stock once, signature rejection/verified capture, duplicate capture/refund handling, order ownership, private ebook download gate and refund lock.');
