@@ -14,4 +14,7 @@ assert.ok(src.includes('branding:{...state.branding,phone,email,address:'),'Info
 assert.ok(src.includes('policies:{...state.policies,privacy:'),'Info edits must preserve other policy properties');
 assert.ok(src.includes('data-store-info'),'Admin dashboard must expose the information editor');
 assert.ok(src.includes('data-save-store-info'),'Information editor must provide a save action');
+for(const id of ['offer-enabled','offer-name','offer-percent','offer-minimum','offer-cap','offer-stack'])assert.ok(src.includes(id),'Missing bill offer editor: '+id);
+assert.ok(src.includes('billOffer:{...state.billOffer,enabled,name,percent,minimumPaise:'),'Bill offer edits must preserve scheduling and other settings');
+assert.ok(src.includes('data-bill-offer'),'Admin dashboard must expose the bill offer');
 console.log('PASS: connected Admin exposes store coordinates, delivery PIN codes, contact and customer policies, preserving unrelated state.');
