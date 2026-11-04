@@ -17,10 +17,15 @@ assert.ok(src.includes('data-save-store-info'),'Information editor must provide 
 for(const id of ['offer-enabled','offer-name','offer-percent','offer-minimum','offer-cap','offer-stack'])assert.ok(src.includes(id),'Missing bill offer editor: '+id);
 assert.ok(src.includes('billOffer:{...state.billOffer,enabled,name,percent,minimumPaise:'),'Bill offer edits must preserve scheduling and other settings');
 assert.ok(src.includes('data-bill-offer'),'Admin dashboard must expose the bill offer');
-assert.ok(src.includes("https://tiles.openfreemap.org/styles/liberty"),'Labelled base map must use the approved style');
+assert.ok(src.includes("https://tiles.openfreemap.org/styles/bright"),'Labelled base map must use the approved style');
 assert.ok(src.includes('https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.1.4/leaflet-maplibre-gl.js'),'Use published browser adapter URL');
 assert.ok(src.includes("if(d.mapStandard)"),'Standard map fallback switch missing');
 assert.ok(src.includes("if(d.mapLabels)"),'Labelled map switch missing');
+assert.ok(src.includes('id="gps-feedback"'),'GPS feedback should appear beside the location button');
+assert.ok(src.includes('Finding your GPS position'),'GPS should display pending state');
+assert.ok(src.includes('Location search timed out'),'GPS timeout should have retry guidance');
+assert.ok(src.includes('Check pin &amp; area names in Google Maps'),'Map should have an easy independent street-name check');
+assert.ok(src.includes('map.setView([p.lat,p.lng],15)'),'Map should not zoom too far in to hide locality labels');
 assert.ok(src.includes("marker.on('dragend',()=>setPin(marker.getLatLng()))"),'Pin drag must remain connected');
 for(const page of ['index.html','connected.html']){const html=fs.readFileSync(path.join(__dirname,'..','dist',page),'utf8');assert.ok(html.includes("https://tiles.openfreemap.org"),'Map tiles must be allowed by '+page+' CSP');assert.ok(html.includes("worker-src 'self' blob:"),'MapLibre workers must be allowed by '+page+' CSP');}
 console.log('PASS: connected Admin exposes store coordinates, delivery PIN codes, contact and customer policies, preserving unrelated state.');
