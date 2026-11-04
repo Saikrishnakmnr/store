@@ -18,6 +18,7 @@ for(const id of ['offer-enabled','offer-name','offer-percent','offer-minimum','o
 assert.ok(src.includes('billOffer:{...state.billOffer,enabled,name,percent,minimumPaise:'),'Bill offer edits must preserve scheduling and other settings');
 assert.ok(src.includes('data-bill-offer'),'Admin dashboard must expose the bill offer');
 assert.ok(src.includes("https://tiles.openfreemap.org/styles/liberty"),'Labelled base map must use the approved style');
+assert.ok(src.includes('https://unpkg.com/@maplibre/maplibre-gl-leaflet@0.1.4/leaflet-maplibre-gl.js'),'Use published browser adapter URL');
 assert.ok(src.includes("if(d.mapStandard)"),'Standard map fallback switch missing');
 assert.ok(src.includes("if(d.mapLabels)"),'Labelled map switch missing');
 assert.ok(src.includes("marker.on('dragend',()=>setPin(marker.getLatLng()))"),'Pin drag must remain connected');
