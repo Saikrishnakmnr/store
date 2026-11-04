@@ -17,4 +17,9 @@ assert.ok(src.includes('data-save-store-info'),'Information editor must provide 
 for(const id of ['offer-enabled','offer-name','offer-percent','offer-minimum','offer-cap','offer-stack'])assert.ok(src.includes(id),'Missing bill offer editor: '+id);
 assert.ok(src.includes('billOffer:{...state.billOffer,enabled,name,percent,minimumPaise:'),'Bill offer edits must preserve scheduling and other settings');
 assert.ok(src.includes('data-bill-offer'),'Admin dashboard must expose the bill offer');
+assert.ok(src.includes("https://tiles.openfreemap.org/styles/liberty"),'Labelled base map must use the approved style');
+assert.ok(src.includes("if(d.mapStandard)"),'Standard map fallback switch missing');
+assert.ok(src.includes("if(d.mapLabels)"),'Labelled map switch missing');
+assert.ok(src.includes("marker.on('dragend',()=>setPin(marker.getLatLng()))"),'Pin drag must remain connected');
+for(const page of ['index.html','connected.html']){const html=fs.readFileSync(path.join(__dirname,'..','dist',page),'utf8');assert.ok(html.includes("https://tiles.openfreemap.org"),'Map tiles must be allowed by '+page+' CSP');assert.ok(html.includes("worker-src 'self' blob:"),'MapLibre workers must be allowed by '+page+' CSP');}
 console.log('PASS: connected Admin exposes store coordinates, delivery PIN codes, contact and customer policies, preserving unrelated state.');
